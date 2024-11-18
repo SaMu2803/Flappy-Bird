@@ -10,9 +10,7 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Flappy Bird")
 
 white = (255, 255, 255)
-blue = (0, 0, 255)
 sky_blue = (135, 206, 235)
-green = (0, 255, 0)
 black = (0, 0, 0)
 
 gravity = 0.25
@@ -35,20 +33,48 @@ if os.path.exists("high_score.txt"):
         high_score = int(file.read())
 
 bg_image = pygame.image.load('sky_background.png')
-land_image = pygame.image.load('land_background.png')
-bird_image = pygame.image.load('bird_sprite.png')
+bg_image = pygame.transform.scale(bg_image, (screen_width, screen_height))
 
+land_image = pygame.image.load('land_background.png')
+land_image = pygame.transform.scale(land_image, (screen_width, 100))
+
+bird_image = pygame.image.load('bird_sprite.png')
 bird_image = pygame.transform.scale(bird_image, (34, 24))
 bird_rect = bird_image.get_rect(center=(bird_x, bird_y))
 
 pipe_top_image = pygame.image.load('pipe_top.png')
-pipe_bottom_image = pygame.image.load('pipe_bottom.png')
 pipe_top_image = pygame.transform.scale(pipe_top_image, (pipe_width, 300))
+
+pipe_bottom_image = pygame.image.load('pipe_bottom.png')
 pipe_bottom_image = pygame.transform.scale(pipe_bottom_image, (pipe_width, 300))
 
 clock = pygame.time.Clock()
 
+def show_start_screen():
+    """Displays the start screen."""
+    title_font = pygame.font.Font(None, 50)
+    title_text = title_font.render("Flappy Bird", True, black)
+    instruction_font = pygame.font.Font(None, 36)
+    instruction_text = instruction_font.render("Press SPACE to Start", True, black)
+
+    while True:
+        screen.fill(sky_blue)
+        screen.blit(bg_image, (0, 0))
+        screen.blit(title_text, (screen_width // 2 - title_text.get_width() // 2, screen_height // 2 - 100))
+        screen.blit(instruction_text, (screen_width // 2 - instruction_text.get_width() // 2, screen_height // 2))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                return
+
+        pygame.display.update()
+        clock.tick(30)
+
 def show_game_over():
+    """Displays the game over screen."""
     game_over_font = pygame.font.Font(None, 50)
     game_over_text = game_over_font.render("Game Over", True, black)
     restart_button = pygame.font.Font(None, 36).render("Press R to Restart", True, black)
@@ -61,6 +87,7 @@ def show_game_over():
     screen.blit(restart_button, (screen_width // 2 - restart_button.get_width() // 2, screen_height // 2 + 100))
 
 def restart_game():
+    """Restarts the game by resetting all variables."""
     global bird_y, bird_movement, pipe_x, pipe_y, score, game_over
     bird_y = screen_height // 2
     bird_movement = 0
@@ -68,6 +95,8 @@ def restart_game():
     pipe_y = random.randint(100, screen_height - pipe_gap - 100)
     score = 0
     game_over = False
+
+show_start_screen()
 
 running = True
 game_over = False
